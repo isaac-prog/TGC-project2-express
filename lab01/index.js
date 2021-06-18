@@ -2,12 +2,19 @@
 const express = require('express')
 require('dotenv').config()
 const MongoUtil = require('./MongoUtil')
+var cors = require('cors')
+var app = express()
+MongoUtil.connect(process.env.MONGO_URI, 'computer_parts');
+ 
+app.use(cors())
+
+app.listen(3000, function () {
+  console.log('CORS-enabled web server listening on port 3000')
+})
 
 // await needs async to work
 async function expressSetup() {
-    let app = express()
     // to wait for data to fully load when connecting to mongodb, and must be placed b4 route
-    await MongoUtil.connect(process.env.MONGO_URI, 'computer_parts');
 
     // Read CPU
     app.get('/cpu', async (req, res) => {
@@ -19,41 +26,41 @@ async function expressSetup() {
     // Do all the R first
     app.get('/case', async (req, res) => {
         let db = MongoUtil.getDB();
-        let result1 = await db.collection("Case").find().toArray();
-        res.send(result1)
+        let result = await db.collection("Case").find().toArray();
+        res.send(result)
     })
 
-    app.get('/Cooler', async (req, res) => {
+    app.get('/cooler', async (req, res) => {
         let db = MongoUtil.getDB();
         let result = await db.collection("Cooler").find().toArray();
         res.send(result)
     })
 
-    app.get('/Graphics', async (req, res) => {
+    app.get('/graphics', async (req, res) => {
         let db = MongoUtil.getDB();
         let result = await db.collection("Graphics").find().toArray();
         res.send(result)
     })
 
-    app.get('/Memory', async (req, res) => {
+    app.get('/memory', async (req, res) => {
         let db = MongoUtil.getDB();
         let result = await db.collection("Memory").find().toArray();
         res.send(result)
     })
 
-    app.get('/Motherboard', async (req, res) => {
+    app.get('/motherboard', async (req, res) => {
         let db = MongoUtil.getDB();
         let result = await db.collection("Motherboard").find().toArray();
         res.send(result)
     })
 
-    app.get('/PSU', async (req, res) => {
+    app.get('/psu', async (req, res) => {
         let db = MongoUtil.getDB();
         let result = await db.collection("PSU").find().toArray();
         res.send(result)
     })
 
-    app.get('/Storage', async (req, res) => {
+    app.get('/storage', async (req, res) => {
         let db = MongoUtil.getDB();
         let result = await db.collection("Storage").find().toArray();
         res.send(result)
@@ -62,7 +69,7 @@ async function expressSetup() {
     app.get('/cpu/create', (req, res) => {
         res.render(result)
     })
-    app.post("/CPU/add",(req,res)=>{
+    app.post("/cpu/add",(req,res)=>{
         let {name, brand, clockspeed, over_clockspeed,description,core}=req.body;
         tags = tags || [];
         if (!Array.isArray(tags)) {
@@ -80,7 +87,7 @@ async function expressSetup() {
     })
 
     // Delete
-    app.delete("/CPU/:id", async (req, res) => {
+    app.delete("/cpu/:id", async (req, res) => {
         let results = await db.collection("CPU").remove({
           _id: ObjectId(req.params.id)
         });
@@ -142,8 +149,8 @@ app.get('/note/:noteid/delete', async(req,res)=>{
 
 
 
-      app.listen(3000, () => {
-        console.log("server has started")
-    })
+    //   app.listen(3000, () => {
+    //     console.log("server has started")
+    // })
 }
 expressSetup();
