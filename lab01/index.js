@@ -89,9 +89,60 @@ async function expressSetup() {
           message: "OK"
         });
       });
-    // Update
 
-    app.listen(3000, () => {
+app.get('/note/:noteid/delete', async(req,res)=>{
+    let db = MongoUtil.getDB();
+    let foodRecord = await db.collection('food').findOne({
+      'notes._id': ObjectId(req.params.noteid)       
+    });
+    await db.collection('food').updateOne({
+      '_id': ObjectId(foodRecord._id)
+    },{
+      '$pull':{
+        'notes': {
+          '_id': ObjectId(req.params.noteid)
+        }
+      }
+    })
+    res.redirect('/food/'+ foodRecord._id)
+  })
+
+      // Update
+      app.get('/CPU/:CPUid/edit', async (req,res)=> {
+        let db = MongoUtil.getDB();
+        let CPURecord = await db.collection('CPU').findOne({
+            '_id':new ObjectId(req.params.CPUid)
+        });
+        
+        res.render('edit_CPU', {
+            CPURecord
+        })  
+      })
+
+      app.post("/CPU/:CPUid/edit", async (req,res)=>{
+        let db = MongoUtil.getDB();
+        let { name, brand, clockspeed, over_clockspeed, description, core } = req.body;
+  
+        if (!Array.isArray(clockspeed, over_clockspeed, description, core)) {
+            tags = [tags];
+        }
+  
+        let CPUid = req.params.CPUid;
+        db.collection('CPU').updateOne({
+            _id:new ObjectId(CPUid)
+        }, 
+        {
+            '$set' : {
+              name, brand, tags
+            }        
+        })
+  
+        res.redirect('/CPU');
+    })
+
+
+
+      app.listen(3000, () => {
         console.log("server has started")
     })
 }
