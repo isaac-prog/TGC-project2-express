@@ -4,6 +4,7 @@ require('dotenv').config()
 const MongoUtil = require('./MongoUtil')
 var cors = require('cors')
 var app = express()
+app.use(express.json())
 MongoUtil.connect(process.env.MONGO_URI, 'computer_parts');
 
 app.use(cors())
@@ -65,48 +66,48 @@ async function expressSetup() {
     res.send(result)
   })
 
+  // filter
+
+
   // Create
-  app.get('/cpu/create', (req, res) => {
-    res.render(result)
-  })
+  // app.get('/cpu/create', (req, res) => {
+  //   res.render(result)
+  // })
 
-  app.post("/cpu/add", (req, res) => {
-    let { name, brand, clockspeed, over_clockspeed, description, core } = req.body;
-    tags = tags || [];
-    if (!Array.isArray(tags)) {
-      tags = [tags];
-    }
-    db.collection("CPU").insertOne({
-      name,
-      brand,
-      clockspeed,
-      over_clockspeed,
-      description,
-      core
-    });
-    res.redirect('/CPU')
-  })
+  // app.post("/cpu/create", (req, res) => {
+  //   let { name, brand, clockspeed, over_clockspeed, description, core } = req.body;
+  //   tags = tags || [];
+  //   if (!Array.isArray(tags)) {
+  //     tags = [tags];
+  //   }
+  //   db.collection("CPU").insertOne({
+  //     name,
+  //     brand,
+  //     clockspeed,
+  //     over_clockspeed,
+  //     description,
+  //     core
+  //   });
+  //   res.redirect('/CPU')
+  // })
 
-  app.get('/case/create', (req, res) => {
-    res.render(result)
+  app.get('/tasks/create',async (req, res) => {
+    let db = MongoUtil.getDB();
+    let result = await db.collection("tasks").find().toArray();
+    res.send(result)
   })
   
-  app.post("/case/add", (req, res) => {
-    let { name, type, color, description, brand, image } = req.body;
-    tags = tags || [];
-    if (!Array.isArray(tags)) {
-      tags = [tags];
-    }
-    db.collection("CPU").insertOne({
-      name,
-      type,
-      color,
-      description,
-      brand,
-      image
+  app.post("/tasks/create", async (req, res) => {
+    console.log(req.body);
+    let {  description, done } = req.body;
+    let db = MongoUtil.getDB();
+    await db.collection("tasks").insertOne({
+      description,done 
     });
-    res.redirect('/CPU')
+    res.send("task added")
   })
+
+
 
 
   // Delete
