@@ -16,14 +16,13 @@ app.listen(3000, function () {
 async function expressSetup() {
     // to wait for data to fully load when connecting to mongodb, and must be placed b4 route
 
-    // Read CPU
+    // Read
     app.get('/cpu', async (req, res) => {
         let db = MongoUtil.getDB();
         let result = await db.collection("CPU").find().toArray();
         res.send(result)
     })
 
-    // Do all the R first
     app.get('/case', async (req, res) => {
         let db = MongoUtil.getDB();
         let result = await db.collection("Case").find().toArray();
@@ -65,7 +64,8 @@ async function expressSetup() {
         let result = await db.collection("Storage").find().toArray();
         res.send(result)
     })
-    // Create CPU
+
+    // Create
     app.get('/cpu/create', (req, res) => {
         res.render(result)
     })
