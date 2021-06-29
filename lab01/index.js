@@ -108,7 +108,21 @@ async function expressSetup() {
   })
 
 
-
+  app.get('/case/create',async (req, res) => {
+    let db = MongoUtil.getDB();
+    let result = await db.collection("case").find().toArray();
+    res.send(result)
+  })
+  
+  app.post("/case/create", async (req, res) => {
+    console.log(req.body);
+    let {  name,type,color,description,brand, image } = req.body;
+    let db = MongoUtil.getDB();
+    await db.collection("Case").insertOne({
+      name,type,color,description,brand, image  
+    });
+    res.send("case added")
+  })
 
   // Delete
   app.delete("/cpu/:id", async (req, res) => {
