@@ -125,32 +125,22 @@ async function expressSetup() {
   })
 
   // Delete
-  app.delete("/cpu/:id", async (req, res) => {
-    let results = await db.collection("CPU").remove({
-      _id: ObjectId(req.params.id)
-    });
-    res.status(200);
-    res.send({
-      message: "OK"
-    });
-  });
-
-  app.get('/note/:noteid/delete', async (req, res) => {
+  app.get('/case/delete',async (req, res) => {
     let db = MongoUtil.getDB();
-    let foodRecord = await db.collection('food').findOne({
-      'notes._id': ObjectId(req.params.noteid)
-    });
-    await db.collection('food').updateOne({
-      '_id': ObjectId(foodRecord._id)
-    }, {
-      '$pull': {
-        'notes': {
-          '_id': ObjectId(req.params.noteid)
-        }
-      }
-    })
-    res.redirect('/food/' + foodRecord._id)
+    let result = await db.collection('case').findOne(_id)
+    res.send(result)
   })
+
+  app.post("/case/delete", async (req, res) => {
+    console.log(req.body);
+    let db = MongoUtil.getDB();
+    let { _id } = req.body;
+    await db.collection('case').remove({
+      _id
+    });
+    res.send("case deleted")
+  })
+  
 
   // Update
   app.get('/CPU/:CPUid/edit', async (req, res) => {
