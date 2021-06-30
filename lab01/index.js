@@ -127,7 +127,7 @@ async function expressSetup() {
   // Delete
   app.get('/case/delete',async (req, res) => {
     let db = MongoUtil.getDB();
-    let result = await db.collection('case').findOne(_id)
+    let result = await db.collection('Case').findOne(_id)
     res.send(result)
   })
 
@@ -135,12 +135,12 @@ async function expressSetup() {
     console.log(req.body);
     let db = MongoUtil.getDB();
     let { _id } = req.body;
-    await db.collection('case').remove({
-      _id
+    await db.collection('Case').remove({
+      _id,
     });
-    res.send("case deleted")
+    res.send(_id + "deleted")
   })
-  
+
 
   // Update
   app.get('/CPU/:CPUid/edit', async (req, res) => {
@@ -174,8 +174,6 @@ async function expressSetup() {
 
     res.redirect('/CPU');
   })
-
-
 
   //   app.listen(3000, () => {
   //     console.log("server has started")
