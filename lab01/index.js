@@ -3,6 +3,7 @@ const express = require('express')
 require('dotenv').config()
 const MongoUtil = require('./MongoUtil')
 var cors = require('cors')
+const { ObjectID } = require('bson')
 var app = express()
 app.use(express.json())
 MongoUtil.connect(process.env.MONGO_URI, 'computer_parts');
@@ -66,31 +67,16 @@ async function expressSetup() {
     res.send(result)
   })
 
-  // filter
+// individual id
+    app.get('/case/:caseid', async (req, res) => {
+      let db = MongoUtil.getDB();
+      let result = await db.collection("Case").findOne({
+        _id:ObjectID(req.params.caseid)
+      });
+      res.send(result)
+    })
 
-
-  // Create
-  // app.get('/cpu/create', (req, res) => {
-  //   res.render(result)
-  // })
-
-  // app.post("/cpu/create", (req, res) => {
-  //   let { name, brand, clockspeed, over_clockspeed, description, core } = req.body;
-  //   tags = tags || [];
-  //   if (!Array.isArray(tags)) {
-  //     tags = [tags];
-  //   }
-  //   db.collection("CPU").insertOne({
-  //     name,
-  //     brand,
-  //     clockspeed,
-  //     over_clockspeed,
-  //     description,
-  //     core
-  //   });
-  //   res.redirect('/CPU')
-  // })
-
+// create
   app.get('/tasks/create',async (req, res) => {
     let db = MongoUtil.getDB();
     let result = await db.collection("tasks").find().toArray();
@@ -125,58 +111,39 @@ async function expressSetup() {
   })
 
   // Delete
-  app.get('/case/delete',async (req, res) => {
-    let db = MongoUtil.getDB();
-    let result = await db.collection('Case').findOne(_id)
-    res.send(result)
-  })
-
   app.post("/case/delete", async (req, res) => {
     console.log(req.body);
     let db = MongoUtil.getDB();
     let { _id } = req.body;
     await db.collection('Case').remove({
-      _id,
+      _id:ObjectID(_id)
     });
     res.send(_id + "deleted")
   })
 
-
   // Update
-  app.get('/CPU/:CPUid/edit', async (req, res) => {
+  app.get('/case/:caseid/edit', async (req, res) => {
     let db = MongoUtil.getDB();
-    let CPURecord = await db.collection('CPU').findOne({
-      '_id': new ObjectId(req.params.CPUid)
+    let result = await db.collection("Case").findOne({
+      _id:ObjectID(req.params.caseid)
     });
-
-    res.render('edit_CPU', {
-      CPURecord
-    })
+    res.send(result)
   })
 
-  app.post("/CPU/:CPUid/edit", async (req, res) => {
+  app.post("/case/:caseid/edit", async (req, res) => {
     let db = MongoUtil.getDB();
-    let { name, brand, clockspeed, over_clockspeed, description, core } = req.body;
-
-    if (!Array.isArray(clockspeed, over_clockspeed, description, core)) {
-      tags = [tags];
-    }
-
+    let {_id} = req.body;
     let CPUid = req.params.CPUid;
-    db.collection('CPU').updateOne({
-      _id: new ObjectId(CPUid)
-    },
-      {
-        '$set': {
-          name, brand, tags
-        }
-      })
-
-    res.redirect('/CPU');
-  })
+    await db.collection('Case').updateOne({
+      _id: new ObjectId(_id)
+    }
+  )})
 
   //   app.listen(3000, () => {
   //     console.log("server has started")
   // })
+
+
+
 }
 expressSetup();
