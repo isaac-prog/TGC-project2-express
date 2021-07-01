@@ -132,12 +132,37 @@ async function expressSetup() {
 
   app.post("/case/:caseid/edit", async (req, res) => {
     let db = MongoUtil.getDB();
-    let {_id} = req.body;
-    let CPUid = req.params.CPUid;
-    await db.collection('Case').updateOne({
-      _id: new ObjectId(_id)
+    let {
+      _id,
+      name,
+      type,
+      color,
+      description,
+      brand, 
+      image
+    } = req.body;
+
+    console.log(_id);
+    try{
+      await db.collection('Case').updateOne({
+        _id: ObjectID(_id)
+      },{ 
+        $set: { 
+          "name" : name,
+          "type":type,
+          "color":color,
+          "description":description,
+          "brand":brand, 
+          "image":image
+        } 
+      })
+      res.send("working")
+    }catch(e){
+      console.log(e);
+      res.send("error");
     }
-  )})
+
+  })
 
   //   app.listen(3000, () => {
   //     console.log("server has started")
