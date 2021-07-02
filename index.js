@@ -672,8 +672,8 @@ app.post("/storage/:storageid/edit", async (req, res) => {
     res.send("storage updated");
  }})
 
-  //   app.listen(3000, () => {
-  //     console.log("server has started")
-  // })
+  app.listen(process.env.PORT, () => {
+  console.log("server has started")
+  })
 }
 expressSetup();
