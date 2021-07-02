@@ -675,5 +675,15 @@ app.post("/storage/:storageid/edit", async (req, res) => {
   app.listen(process.env.PORT, () => {
   console.log("server has started")
   })
+
+// filter
+// filter case by type
+app.get('/case', async (req, res) => {
+  let db = MongoUtil.getDB();
+  let result = await db.collection("Case").findOne({
+    type: type
+  }).toArray();
+  res.send(result)
+})
 }
 expressSetup();
