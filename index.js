@@ -678,7 +678,7 @@ app.post("/storage/:storageid/edit", async (req, res) => {
 
 // filter
 // filter case by type
-app.get('/case', async (req, res) => {
+app.get('/case/filter', async (req, res) => {
   let db = MongoUtil.getDB();
   let result = await db.collection("Case").findOne({
     type: type
